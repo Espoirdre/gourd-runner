@@ -1,0 +1,21 @@
+{
+  "name": "w05-3d-game-gourd-runner",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Gourd Runner - a short browser-based 3D endless runner built with Three.js for the Week 05 group assignment.",
+  "type": "commonjs",
+  "scripts": {
+    "start": "python -m http.server 8000"
+  },
+  "dependencies": {},
+  "devDependencies": {},
+  "engines": {
+    "node": ">=16"
+  },
+  "notes": [
+    "There are no runtime npm dependencies.",
+    "Three.js r147 is vendored at lib/three.min.js (MIT licence) so the game runs fully offline.",
+    "The game opens by double-clicking index.html; 'npm start' is only an optional local-server fallback.",
+    "No lockfile is included because no packages are installed."
+  ]
+}

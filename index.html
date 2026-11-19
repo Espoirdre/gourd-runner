@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Gourd Runner · 黄胖快跑</title>
+<style>
+  :root {
+    --cream: #f6ecd8;
+    --cream-dim: #cbbfa6;
+    --gold: #f0c94e;
+    --gold-deep: #d8a52f;
+    --teal: #4fbf9f;
+    --panel: rgba(26, 21, 16, 0.9);
+    --line: rgba(240, 205, 130, 0.22);
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    height: 100%;
+    overflow: hidden;
+    background: #16120d;
+    color: var(--cream);
+    font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  #app { position: fixed; inset: 0; }
+
+  canvas#scene { display: block; width: 100%; height: 100%; }
+
+  .hidden { display: none !important; }
+
+  /* ---------- HUD ---------- */
+  #hud {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    padding: 18px 22px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .hud-row { display: flex; align-items: flex-start; gap: 20px; }
+
+  .hearts { display: flex; gap: 6px; }
+
+  .heart {
+    width: 26px; height: 26px;
+    fill: #e4564f;
+    filter: drop-shadow(0 1px 2px rgba(0,0,0,.5));
+    transition: opacity .18s, transform .18s;
+  }
+  .heart.off { opacity: .22; transform: scale(.86); fill: #6b5f52; }
+  .heart.pulse { animation: hpulse .4s ease-out; }
+  @keyframes hpulse { 0% { transform: scale(1.35); } 100% { transform: scale(1); } }
+
+  .progress-wrap { flex: 1; max-width: 420px; margin: 0 auto; }
+  .progress-label {
+    display: flex; justify-content: space-between;
+    font-size: 12px; letter-spacing: .04em;
+    color: var(--cream-dim); margin-bottom: 6px;
+    text-shadow: 0 1px 3px rgba(0,0,0,.6);
+  }
+  .progress-bar {
+    height: 8px; border-radius: 99px;
+    background: rgba(0,0,0,.42);
+    border: 1px solid var(--line);
+    overflow: hidden;
+  }
+  #progressFill {
+    height: 100%; width: 0%;
+    background: linear-gradient(90deg, var(--teal), var(--gold));
+    transition: width .1s linear;
+  }
+
+  .shard-box {
+    display: flex; align-items: center; gap: 8px;
+    background: rgba(0,0,0,.42);
+    border: 1px solid var(--line);
+    border-radius: 99px;
+    padding: 6px 14px 6px 10px;
+    font-size: 17px; font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+  .shard-icon { width: 18px; height: 18px; fill: var(--gold); }
+
+  .hud-bottom {
+    display: flex; align-items: center; justify-content: space-between;
+    font-size: 12px; color: var(--cream-dim);
+    text-shadow: 0 1px 3px rgba(0,0,0,.7);
+  }
+  .keys { display: flex; gap: 14px; flex-wrap: wrap; }
+  .keys b {
+    display: inline-block;
+    min-width: 20px;
+    padding: 2px 6px;
+    margin-right: 5px;
+    border-radius: 5px;
+    border: 1px solid var(--line);
+    background: rgba(0,0,0,.4);
+    color: var(--cream);
+    font-weight: 500;
+    text-align: center;
+  }
+
+  .icon-btn {
+    pointer-events: auto;
+    position: relative;
+    width: 38px; height: 38px;
+    display: grid; place-items: center;
+    border-radius: 10px;
+    border: 1px solid var(--line);
+    background: rgba(0,0,0,.42);
+    color: var(--cream);
+    cursor: pointer;
+    transition: background .15s, border-color .15s;
+  }
+  .icon-btn:hover { background: rgba(240,201,78,.16); border-color: rgba(240,201,78,.5); }
+  .icon-btn svg { width: 19px; height: 19px; fill: none; stroke: currentColor; stroke-width: 1.8; }
+
+  .icon-btn.is-muted { color: #8a7f70; opacity: .75; }
+  .icon-btn.is-muted::after {
+    content: '';
+    position: absolute;
+    width: 24px; height: 2px;
+    background: currentColor;
+    transform: rotate(-45deg);
+    border-radius: 2px;
+  }
+
+  /* ---------- 屏幕 ---------- */
+  .screen {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    padding: 28px;
+    background: radial-gradient(ellipse at 42% 46%, rgba(26,20,14,.38), rgba(10,8,6,.8));
+    backdrop-filter: blur(2px);
+  }
+
+  .panel {
+    width: min(600px, 100%);
+    max-height: 100%;
+    overflow-y: auto;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    padding: 30px 34px 26px;
+    box-shadow: 0 24px 70px rgba(0,0,0,.55);
+  }
+
+  .eyebrow {
+    font-size: 11px; letter-spacing: .22em; text-transform: uppercase;
+    color: var(--teal); margin-bottom: 10px;
+  }
+
+  h1 {
+    margin: 0 0 6px;
+    font-size: 40px; line-height: 1.05; font-weight: 600;
+    letter-spacing: -.01em;
+  }
+  h1 .accent { color: var(--gold); }
+
+  .tagline { margin: 0 0 20px; color: var(--cream-dim); font-size: 15px; line-height: 1.65; }
+
+  h2 { margin: 0 0 6px; font-size: 30px; font-weight: 600; }
+
+  .brief {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
+    margin: 0 0 22px;
+  }
+  .brief div {
+    border: 1px solid var(--line);
+    border-radius: 11px;
+    padding: 11px 12px;
+    background: rgba(255,255,255,.03);
+  }
+  .brief span { display: block; font-size: 11px; color: var(--cream-dim); letter-spacing: .1em; margin-bottom: 4px; }
+  .brief strong { font-size: 14px; font-weight: 500; color: var(--cream); }
+
+  .btn-row { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 18px; }
+
+  button {
+    font: inherit;
+    border: 1px solid var(--line);
+    background: rgba(255,255,255,.05);
+    color: var(--cream);
+    border-radius: 11px;
+    padding: 12px 22px;
+    font-size: 15px;
+    cursor: pointer;
+    transition: transform .12s, background .15s, border-color .15s;
+  }
+  button:hover { background: rgba(255,255,255,.1); border-color: rgba(240,201,78,.45); }
+  button:active { transform: translateY(1px); }
+
+  button.primary {
+    background: linear-gradient(180deg, var(--gold), var(--gold-deep));
+    border-color: var(--gold);
+    color: #2a1f08;
+    font-weight: 600;
+  }
+  button.primary:hover { background: linear-gradient(180deg, #ffd968, var(--gold)); }
+
+  button.demo-btn {
+    border-color: rgba(79,191,159,.55);
+    color: #b9f0de;
+    background: rgba(79,191,159,.1);
+  }
+  button.demo-btn:hover { background: rgba(79,191,159,.2); }
+
+  .controls-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 8px 18px;
+    font-size: 13px; color: var(--cream-dim);
+    border-top: 1px solid var(--line);
+    padding-top: 16px;
+  }
+  .controls-grid b {
+    display: inline-block;
+    min-width: 22px; padding: 2px 7px; margin-right: 7px;
+    border-radius: 5px; border: 1px solid var(--line);
+    background: rgba(0,0,0,.35); color: var(--cream);
+    font-weight: 500; text-align: center;
+  }
+
+  .row-between { display: flex; align-items: center; justify-content: space-between; gap: 14px; }
+
+  .volume { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--cream-dim); }
+  input[type="range"] {
+    -webkit-appearance: none; appearance: none;
+    width: 120px; height: 4px; border-radius: 99px;
+    background: rgba(255,255,255,.2); outline: none;
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none; appearance: none;
+    width: 15px; height: 15px; border-radius: 50%;
+    background: var(--gold); cursor: pointer;
+    border: 2px solid #2a1f08;
+  }
+  input[type="range"]::-moz-range-thumb {
+    width: 13px; height: 13px; border-radius: 50%;
+    background: var(--gold); cursor: pointer; border: 2px solid #2a1f08;
+  }
+
+  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 20px 0 24px; }
+  .stats div { text-align: center; border: 1px solid var(--line); border-radius: 12px; padding: 16px 8px; }
+  .stats span { display: block; font-size: 11px; letter-spacing: .12em; color: var(--cream-dim); margin-bottom: 6px; }
+  .stats strong { font-size: 27px; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .stats strong.gold { color: var(--gold); }
+  .stats strong.teal { color: var(--teal); }
+
+  #screenMenu { justify-content: flex-start; padding-left: clamp(18px, 5vw, 84px); }
+  @media (max-width: 880px) { #screenMenu { justify-content: center; padding-left: 0; } }
+
+  .note { font-size: 12.5px; color: var(--cream-dim); line-height: 1.6; margin-top: 4px; }
+
+  /* ---------- 演示徽章 / 提示 ---------- */
+  #demoBadge {
+    position: absolute; top: 74px; left: 50%; transform: translateX(-50%);
+    display: flex; align-items: center; gap: 9px;
+    padding: 8px 16px;
+    border-radius: 99px;
+    background: rgba(79,191,159,.16);
+    border: 1px solid rgba(79,191,159,.6);
+    color: #b9f0de; font-size: 12.5px; letter-spacing: .08em;
+    pointer-events: none;
+    white-space: nowrap;
+  }
+  .dot {
+    width: 8px; height: 8px; border-radius: 50%; background: #e4564f;
+    animation: blink 1.1s infinite;
+  }
+  @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: .25; } }
+
+  #toast {
+    position: absolute; left: 50%; bottom: 90px; transform: translateX(-50%);
+    padding: 10px 20px; border-radius: 99px;
+    background: rgba(0,0,0,.72);
+    border: 1px solid var(--line);
+    font-size: 13px; color: var(--cream);
+    opacity: 0; transition: opacity .3s;
+    pointer-events: none;
+  }
+  #toast.show { opacity: 1; }
+
+  #fadeHit {
+    position: absolute; inset: 0; pointer-events: none;
+    background: radial-gradient(ellipse at 50% 50%, rgba(190,40,30,0) 35%, rgba(190,40,30,.7) 100%);
+    opacity: 0;
+  }
+
+  #errBox {
+    position: absolute; inset: 0; padding: 40px;
+    background: #16120d; color: #ff9c8f;
+    font-family: ui-monospace, Consolas, monospace; font-size: 13px;
+    white-space: pre-wrap; overflow: auto; display: none;
+  }
+</style>
+</head>
+<body>
+<div id="app">
+  <canvas id="scene"></canvas>
+
+  <div id="hud" class="hidden">
+    <div class="hud-row">
+      <div class="hearts" id="hearts">
+        <svg class="heart" viewBox="0 0 24 24"><path d="M12 21s-7.6-4.8-9.6-9.1A5.4 5.4 0 0 1 12 6.3a5.4 5.4 0 0 1 9.6 5.6C19.6 16.2 12 21 12 21z"/></svg>
+        <svg class="heart" viewBox="0 0 24 24"><path d="M12 21s-7.6-4.8-9.6-9.1A5.4 5.4 0 0 1 12 6.3a5.4 5.4 0 0 1 9.6 5.6C19.6 16.2 12 21 12 21z"/></svg>
+        <svg class="heart" viewBox="0 0 24 24"><path d="M12 21s-7.6-4.8-9.6-9.1A5.4 5.4 0 0 1 12 6.3a5.4 5.4 0 0 1 9.6 5.6C19.6 16.2 12 21 12 21z"/></svg>
+        <svg class="heart" viewBox="0 0 24 24"><path d="M12 21s-7.6-4.8-9.6-9.1A5.4 5.4 0 0 1 12 6.3a5.4 5.4 0 0 1 9.6 5.6C19.6 16.2 12 21 12 21z"/></svg>
+      </div>
+
+      <div class="progress-wrap">
+        <div class="progress-label">
+          <span id="distText">0 m</span>
+          <span id="finishText">900 m</span>
+        </div>
+        <div class="progress-bar"><div id="progressFill"></div></div>
+      </div>
+
+      <div class="shard-box">
+        <svg class="shard-icon" viewBox="0 0 24 24"><path d="M12 2l6.5 8.2L12 22 5.5 10.2z"/></svg>
+        <span id="shardText">0</span>
+      </div>
+    </div>
+
+    <div class="hud-bottom">
+      <div class="keys">
+        <span><b>&larr;</b><b>&rarr;</b>换道</span>
+        <span><b>空格</b>跳</span>
+        <span><b>&darr;</b>滑铲</span>
+        <span><b>M</b>静音</span>
+        <span><b>Esc</b>暂停</span>
+      </div>
+      <div style="display:flex; gap:8px;">
+        <button class="icon-btn" id="btnMuteHud" title="静音 (M)">
+          <svg id="iconSoundOn" viewBox="0 0 24 24"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16.5 8.5a5 5 0 0 1 0 7"/><path d="M19 6a8.5 8.5 0 0 1 0 12"/></svg>
+        </button>
+        <button class="icon-btn" id="btnPause" title="暂停 (Esc)">
+          <svg viewBox="0 0 24 24"><path d="M8 5v14M16 5v14"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="demoBadge" class="hidden">
+    <span class="dot"></span>
+    <span>DEMO 自动演示 · 按 Esc 退出</span>
+  </div>
+
+  <div id="toast"></div>
+  <div id="fadeHit"></div>
+
+  <!-- 主菜单 -->
+  <div id="screenMenu" class="screen">
+    <div class="panel">
+      <div class="eyebrow">Week 05 · 3D Web Game</div>
+      <h1>Gourd Runner<br /><span class="accent">黄胖快跑</span></h1>
+      <p class="tagline">
+        一只抱胸的黄胖在神庙长廊里狂奔。左右换道、起跳过栏、滑铲钻梁，
+        收集金色碎片，冲过 900 米处的终点门。掉心之后，后面那只橘猫会越追越近。
+      </p>
+
+      <div class="brief">
+        <div><span>目标</span><strong>跑到终点门</strong></div>
+        <div><span>生命</span><strong>4 颗心</strong></div>
+        <div><span>时长</span><strong>约 60 秒</strong></div>
+      </div>
+
+      <div class="btn-row">
+        <button class="primary" id="btnStart">开始游戏</button>
+        <button class="demo-btn" id="btnDemo">观看演示 Demo</button>
+      </div>
+
+      <div class="row-between">
+        <div class="volume">
+          <button class="icon-btn" id="btnMuteMenu" title="静音">
+            <svg viewBox="0 0 24 24"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16.5 8.5a5 5 0 0 1 0 7"/><path d="M19 6a8.5 8.5 0 0 1 0 12"/></svg>
+          </button>
+          <span>音量</span>
+          <input type="range" id="volRange" min="0" max="100" value="65" />
+          <span id="volText">65%</span>
+        </div>
+        <span class="note" id="menuHint"></span>
+      </div>
+
+      <div class="controls-grid">
+        <span><b>&larr;</b><b>&rarr;</b>或 <b>A</b><b>D</b> 左右换道</span>
+        <span><b>空格</b>或 <b>W</b> 起跳越过矮栏</span>
+        <span><b>&darr;</b>或 <b>S</b> 滑铲钻过吊梁</span>
+        <span><b>M</b> 静音 · <b>Esc</b> 暂停</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 暂停 -->
+  <div id="screenPause" class="screen hidden">
+    <div class="panel" style="max-width:420px; text-align:center;">
+      <h2>已暂停</h2>
+      <p class="note" style="margin-bottom:22px;">按 Esc 继续，或回到主菜单。</p>
+      <div class="btn-row" style="justify-content:center;">
+        <button class="primary" id="btnResume">继续</button>
+        <button id="btnQuit">回主菜单</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 结算 -->
+  <div id="screenResult" class="screen hidden">
+    <div class="panel" style="max-width:520px;">
+      <div class="eyebrow" id="resultEyebrow">Run complete</div>
+      <h2 id="resultTitle">冲过终点</h2>
+      <p class="note" id="resultNote"></p>
+
+      <div class="stats">
+        <div><span>距离</span><strong id="statDist">0 m</strong></div>
+        <div><span>碎片</span><strong class="gold" id="statShards">0</strong></div>
+        <div><span>得分</span><strong class="teal" id="statScore">0</strong></div>
+      </div>
+
+      <div class="btn-row" style="margin-bottom:0;">
+        <button class="primary" id="btnRetry">再跑一次</button>
+        <button id="btnMenu">回主菜单</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="errBox"></div>
+</div>
+
+<script>
+  window.addEventListener('error', function (e) {
+    var box = document.getElementById('errBox');
+    box.style.display = 'block';
+    box.textContent += 'ERROR: ' + e.message + '\n  at ' + (e.filename || '') + ':' + (e.lineno || '') + '\n\n';
+  });
+</script>
+<script src="lib/three.min.js"></script>
+<script src="src/patterns.js"></script>
+<script src="src/audio.js"></script>
+<script src="src/character.js"></script>
+<script src="src/game.js"></script>
+</body>
+</html>
