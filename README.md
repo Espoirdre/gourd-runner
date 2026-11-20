@@ -8,6 +8,32 @@ reach the glowing gate at **900 m** — or when your four hearts are gone.
 
 ---
 
+## 0. Playable site (GitHub Pages)
+
+**Play now — no GitHub account needed:** https://espoirdre.github.io/gourd-runner/
+
+This is the single shared build for the whole team. It is published straight from `main` /
+repository root, so whatever is merged into `main` is what players get. Do not publish a fork.
+
+**Run it locally (two ways, both work):**
+
+1. Double-click `index.html` — no server, no install, no network.
+2. Optional local server, if your browser blocks local file scripts:
+   ```
+   python -m http.server 8000     # then open http://localhost:8000
+   ```
+
+**How the site is published:**
+
+1. Repository **Settings → Pages**.
+2. Source: **Deploy from a branch**; branch **`main`**, folder **`/` (root)**.
+3. GitHub builds and deploys within a minute; the URL above is the result. Every push to `main`
+   triggers a new deployment, visible under the **Actions** tab.
+
+Pages only serves static files — there is no backend, and this game needs none.
+
+---
+
 ## 1. Run it (no install, no server, no network)
 
 1. Unzip the folder (or open it as delivered).
@@ -140,3 +166,18 @@ file needs to change.
 
 `window.W05Game` exposes `start()`, `startDemo()`, `menu()`, `state()`, `snapshot()` and
 `advance(seconds)`. They are used by the group's automated checks and do not affect normal play.
+
+---
+
+## Contributors
+
+Each person wrote their own row; nobody edited a teammate's line.
+
+| Contributor | What they did | Week 05 | Week 07 |
+| --- | --- | --- | --- |
+| 张铖轩 | _to be written by this member_ | game | publishing, README §0, merge |
+| 陈思峥 | _to be written by this member_ | game | README §2, §5 |
+| 高斌雄 | _to be written by this member_ | game | README §6, §8 |
+| 嵇翰林 | _to be written by this member_ | game | README §0.5 (CI/CD) |
+| 马桢豪 | _to be written by this member_ | game | README §7, §9 |
+
