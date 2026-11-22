@@ -175,7 +175,7 @@ Each person wrote their own row; nobody edited a teammate's line.
 
 | Contributor | What they did | Week 05 | Week 07 |
 | --- | --- | --- | --- |
-| 张铖轩 | _to be written by this member_ | game | publishing, README §0, merge |
+| 张铖轩 | Set the game concept and scope (three-lane runner, geometric mascot, one 900 m level), drove the build in the harness, and checked every build in the browser; in Week 07 published the site and wrote §0. | concept, scope, build, browser checks | publishing, README §0, merge |
 | 陈思峥 | _to be written by this member_ | game | README §2, §5 |
 | 高斌雄 | _to be written by this member_ | game | README §6, §8 |
 | 嵇翰林 | _to be written by this member_ | game | README §0.5 (CI/CD) |
