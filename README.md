@@ -36,7 +36,20 @@ python -m http.server 8000
 | Mute / unmute | `M` |
 | Pause | `Esc` |
 
-Keyboard only. There is no touch or gamepad support.
+**Keyboard only** — there is no touch or gamepad support.
+
+### Tips & combos
+
+- **Jump + lane switch:** while in the air you can still change lanes. Use this to dodge a pillar
+  that appears right in front of you.
+- **Slide cancel:** pressing `↓` / `S` during a landing recovery cancels the brief cooldown and
+  lets you slide earlier — useful when a lintel follows a low barrier.
+- **Double threat:** when you see a low barrier and a lintel in quick succession, jump over the
+  first and immediately slide (hold `↓` / `S` before landing) to duck the second.
+- **Stay central:** the middle lane gives you the most reaction time for obstacles appearing on
+  either side. Only switch when you must.
+- **Wait at the start:** the first few rows come at a moderate pace; use them to settle into a
+  rhythm before the speed picks up.
 
 ## 3. Rules and feedback
 
@@ -84,8 +97,9 @@ Controls:
 - **Speaker button** in the menu and in the HUD.
 - **`M` key** to mute/unmute at any time.
 
-Browsers block autoplay, so audio starts only after your first click (Start / Demo / slider).
-On some laptops the volume starts low; raise the slider if you cannot hear anything.
+> ⚠️ **Browsers block autoplay**, so sound only starts after your first click — tap **开始游戏 / Start**,
+> **观看演示 Demo**, or adjust the volume slider to enable audio. On some laptops the volume starts
+> low; raise the slider if you cannot hear anything.
 
 ## 6. Tested browsers
 
