@@ -8,6 +8,16 @@ reach the glowing gate at **900 m** — or when your four hearts are gone.
 
 ---
 
+## 0.5 CI/CD exploration
+
+Deployment run: [pages build and deployment #1](https://github.com/Espoirdre/gourd-runner/actions/runs/44711908787)
+
+Deployment inspected: "pages build and deployment #1" of Espoirdre/gourd-runner on branch main, from commit aa89a56. The Summary showed trigger event "dynamic" and overall result Success; "dynamic" cannot be interpreted as "push" from the logs alone.
+
+The pipeline ran automatically: Checkout, Build with Jekyll (source ./, output ./_site), Upload artifact (github-pages, reported valid and successfully uploaded), then deployment via actions/deploy-pages@v5 reading that same artifact, creating a Pages deployment for the source commit and reporting success; report-build-status also succeeded. Steps outside automation include setting the Pages publish source, initiating the first run, and browser-based gameplay acceptance.
+
+The logs show build, upload, and deployment succeeded, but cannot prove the game works: no gameplay testing appears in the inspected steps, which does not rule out tests elsewhere in the repository. A useful missing check (candidate suggestion, not personal judgment): an automated post-deploy smoke test loading the page and verifying key assets.
+
 ## 1. Run it (no install, no server, no network)
 
 1. Unzip the folder (or open it as delivered).
