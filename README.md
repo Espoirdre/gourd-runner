@@ -139,12 +139,19 @@ Controls:
 
 ## 6. Tested browsers
 
-| Browser | Version | Result |
-| --- | --- | --- |
-| Microsoft Edge (Chromium) | 156.0.4314.58 on Windows 11 | Full run completed, demo mode completed, sound on |
-| Google Chrome (Chromium) | 141 | Same behaviour (same engine) |
+**How it was tested:** `index.html` opened straight from disk (`file://`), with no server and no
+network. The run went to the 900 m gate, the demo was played once, and sound was checked with
+both the `M` key and the volume slider.
 
-Not tested: Safari, Firefox, iOS/Android. WebGL is required.
+| Browser | Version | OS | Played to 900 m | Demo | Sound |
+| --- | --- | --- | --- | --- | --- |
+| Microsoft Edge (Chromium) | 157.0.4341.60 | Windows 11 25H2 (build 26200) | yes | yes | yes |
+
+**Requires WebGL.** The renderer is `THREE.WebGLRenderer` with no 2D fallback, so a browser that
+cannot create a WebGL context has no way to draw the scene.
+
+**Not tested:** Google Chrome, Safari, Firefox. Phones are out of scope for play: no touch or
+gamepad input is implemented (see §8 for what a phone actually does).
 
 ## 7. Files
 
@@ -169,17 +176,27 @@ file needs to change.
 
 ## 8. Known limits
 
-- **One level only**, about 55–70 seconds per run. Reaching 900 m ends the game; there is no
-  endless mode and no second stage.
-- **Keyboard only.** No touch controls, so it is not playable on a phone.
-- **No persistence.** Best score and volume reset when the page is reloaded.
+**Affects play**
+
+- **Keyboard only.** No touch or swipe input is implemented. On a phone the page loads and the
+  game runs, but swiping does nothing: the character cannot be steered, so the game cannot be
+  played there. The pause and volume buttons still work because they are ordinary buttons.
+- **No persistence.** Nothing is stored in the browser: the score lives only for the current run,
+  and the volume slider returns to its 65% default on reload. There is no save, continue or
+  best-score record.
+- **One level only**, about 48–49 seconds per run: three human runs and one demo run, timed, all
+  finished in 48–49 s. Reaching 900 m ends the game; there is no endless mode and no second
+  stage.
+
+**Deliberate trade-offs**
+
 - **Procedural obstacles.** Rows are generated from a table with a fairness filter, so two runs
   are never identical; you may occasionally see an easy stretch repeat.
-- **No shadows or post-processing.** Deliberately flat-shaded and low-poly so it stays smooth on
+- **No shadows or post-processing.** Flat-shaded and low-poly on purpose so it stays smooth on
   integrated graphics; the character casts a painted circle shadow instead of a real one.
 - **Rendering resolution is capped** at 1.6× device pixel ratio to protect frame rate.
-- The mascot is built from spheres and capsules, so it is an approximation of the reference
-  character, not a sculpted model.
+- **Approximate mascot.** The character is built from spheres and capsules, so it is an
+  approximation of the reference design, not a sculpted model.
 
 ## 9. Credits
 
