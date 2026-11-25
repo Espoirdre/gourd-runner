@@ -155,6 +155,7 @@ w05_3d_game/
 `src/patterns.js` is plain data: each row is `[left lane, middle lane, right lane]` and each cell
 is `''`, `'shard'`, `'low'`, `'high'` or `'pillar'`. Edit that table to change the level; no other
 file needs to change.
+> Checked: 8 files match submission package, all descriptions accurate.
 
 ## 8. Known limits
 
