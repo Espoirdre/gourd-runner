@@ -213,13 +213,14 @@ file needs to change.
 
 ## Contributors
 
-Each person wrote their own row; nobody edited a teammate's line.
+Each row quotes that member's own description of their work from the Week 05 submission; the
+Week 07 column lists the section each person wrote in this repository.
 
 | Contributor | What they did | Week 05 | Week 07 |
 | --- | --- | --- | --- |
 | 张铖轩 | Set the game concept and scope (three-lane runner, geometric mascot, one 900 m level), drove the build in the harness, and checked every build in the browser; in Week 07 published the site and wrote §0. | concept, scope, build, browser checks | publishing, README §0, merge |
-| 陈思峥 | _to be written by this member_ | game | README §2, §5 |
-| 高斌雄 | _to be written by this member_ | game | README §6, §8 |
-| 嵇翰林 | _to be written by this member_ | game | README §0.5 (CI/CD) |
-| 马桢豪 | _to be written by this member_ | game | README §7, §9 |
+| 陈思峥 | Game audio; ran the sound on start, the volume slider, the mute toggle (M key) and a restart after game over. | audio, sound and mute checks | README §2, §5 |
+| 高斌雄 | Supplied some core files of the game and checked that they worked. | core files, checks that they load and run | README §6, §8 |
+| 嵇翰林 | Built and documented a separate 3D game prototype and ran one external playtest session on 2026-11-02. | prototype, external playtest | README §0.5 (CI/CD) |
+| 马桢豪 | Kept the task-allocation statistics, collected the AI-interaction evidence and maintained the AI usage log. | task statistics, AI evidence log | README §7, §9 |
 
